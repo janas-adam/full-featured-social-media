@@ -14,7 +14,7 @@ import os
 from configparser import RawConfigParser
 
 config = RawConfigParser()
-config.read('settings/secret_settings.ini')
+config.read('secret_settings.ini')
 SECRET_KEY = config.get('section', 'SECRET_KEY')
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
