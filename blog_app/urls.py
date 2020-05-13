@@ -7,6 +7,15 @@ from .views import (
 	PostUpdateView,
 	PostDeleteView,
 	UserPostListView,
+	CategoryPostListView,
+	add_comment_to_post,
+	remove_comment,
+	like_post,
+	like_comment,
+	unlike_post,
+	unlike_comment,
+
+
 )
 
 urlpatterns = [
@@ -17,5 +26,12 @@ urlpatterns = [
 	path('post/<int:pk>/update/', PostUpdateView.as_view(), name='post-update'),
 	path('user/<str:username>', UserPostListView.as_view(), name='user-posts'),
 	path('about', views.about, name='blog-about'),
-    
+	path('post/<int:pk>/comment/', views.add_comment_to_post, name='add-comment'),
+	path('comment/<int:pk>/remove/', views.remove_comment, name='remove-comment'),
+	path('post/<int:pk>/like/', views.like_post, name='like-post'),
+	path('comment/<int:pk>/like/', views.like_comment, name='like-comment'),
+	path('post/<int:pk>/unlike/', views.unlike_post, name='unlike-post'),
+	path('comment/<int:pk>/unlike/', views.unlike_comment, name='unlike-comment'),
+	path('<int:category>', views.CategoryPostListView.as_view(), name='category')
+
 ]

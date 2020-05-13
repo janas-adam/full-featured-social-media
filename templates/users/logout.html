@@ -1,5 +1,12 @@
 {% extends "blog/base.html" %}
 
+{% block menu %}
+<div class="navbar-nav">	
+        {% for item in context %}
+            <a class="nav-item nav-link" href="{{item.url}}">{{item.title}}</a>
+        {% endfor %}
+</div>
+{% endblock menu %}
 {% block content %}
 
 <h2> You have been logged out </h2>

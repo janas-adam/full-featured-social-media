@@ -9,6 +9,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="{% static 'blog/style.css' %}">
+    <script src="https://www.google.com/recaptcha/api.js"></script>
 
     <title>Django blog</title>
   </head>
@@ -26,16 +27,9 @@
           <a class="nav-item nav-link" href="{% url 'blog-about' %}">About</a>
         </div>
         <!-- Navbar Right Side -->
-        <div class="navbar-nav">
-        	{% if user.is_authenticated %}
-            <a class="nav-item nav-link" href="{% url 'post-create' %}">New Post</a>
-          		<a class="nav-item nav-link" href="{% url 'profile' %}">Profile</a>
-          		<a class="nav-item nav-link" href="{% url 'logout' %}">Logout</a>
-            {% else %}
-          		<a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
-          		<a class="nav-item nav-link" href="{% url 'register' %}">Register</a>
-            {% endif %}
-        </div>
+        {% block menu %}
+        
+        {% endblock %}
       </div>
     </div>
   </nav>
@@ -55,15 +49,12 @@
     </div>
     <div class="col-md-4">
       <div class="content-section">
-        <h3>Our Sidebar</h3>
-        <p class='text-muted'>You can put any information here you'd like.
+        <h3>Categories</h3>
           <ul class="list-group">
-            <li class="list-group-item list-group-item-light">Latest Posts</li>
-            <li class="list-group-item list-group-item-light">Announcements</li>
-            <li class="list-group-item list-group-item-light">Calendars</li>
-            <li class="list-group-item list-group-item-light">etc</li>
+            {% for category in categories %}
+  <li class="list-group-item list-group-item"><a href="{% url 'category' category=category.id %}">#{{category.name}}</a></li>
+            {% endfor %}
           </ul>
-        </p>
       </div>
     </div>
   </div>
