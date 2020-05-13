@@ -1,7 +1,6 @@
 import os
 from django.test import TestCase
 from blog_app.models import Post, Category, MenuOption, Comment, PostLike, CommentLike
-from users.forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.auth.models import User
 from django.test.client import Client
 from django.urls import reverse
