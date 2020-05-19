@@ -31,12 +31,12 @@ def profile(request):
 			messages.success(request, 'Your account has been updated!')
 			return redirect('profile')
 	else:
-		u_form = UserUpdateForm(instance=request.user)
-		p_form = ProfileUpdateForm(instance=request.user.profile)
+		form_user_update = UserUpdateForm(instance=request.user)
+		form_profile_update = ProfileUpdateForm(instance=request.user.profile)
 
 	context = {
-		'u_form': u_form,
-		'p_form': p_form
+		'form_user_update': form_user_update,
+		'form_profile_update': form_profile_update
 
 	}
 

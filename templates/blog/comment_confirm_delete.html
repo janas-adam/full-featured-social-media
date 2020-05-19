@@ -1,5 +1,4 @@
 {% extends "blog/base.html" %}
-{% load crispy_forms_tags %}
 
 {% block menu %}
 <div class="navbar-nav">	
@@ -14,16 +13,13 @@
 	<form method="POST">
 		{% csrf_token %}
 			<fieldset class="form-group">
-				<legend class="border_bottom mb-4"> Comment </legend>
-
-				{{form|crispy}}
-
+				<legend class="border_bottom mb-4">Delete Comment</legend>
+				<h2> Are you sure you want to delete the comment "{{ object.content }}"
 			</fieldset>
-			<div class="g-recaptcha" data-sitekey="6LeVZ_MUAAAAAOJLc2Fk5aqzvkt1ARq5M6YM2BrF"></div>
 			<div class="form-group">
-				<button class="btn btn-outline-info" type="submit" > Add Comment </button>
+				<button class="btn btn-outline-danger" type="submit"> Yes, delete </button>
+				<a class="btn btn-outline-secondary" href="{% url 'post-detail' object.post.id  %}"> Cancel </a>
 			</div>
-			
 	</form>
 
 </div>

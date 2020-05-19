@@ -48,12 +48,12 @@ class Comment(models.Model):
         return "%s - %s" % (self.author, self.content)
 
     def get_absolute_url(self):
-        return reverse('post-detail', kwargs={'pk': self.pk})
+        return reverse('post-detail', kwargs={'pk': self.post.pk})
 
 
 class PostLike(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    post = models.ForeignKey('Post', on_delete=models.CASCADE)
+    post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='post_likes')
     created_date = models.DateTimeField(default=timezone.now)
 
     def get_absolute_url(self):

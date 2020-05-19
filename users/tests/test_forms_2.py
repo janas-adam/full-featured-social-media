@@ -1,7 +1,6 @@
 import os
 from django.test import TestCase
 from users.forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
-from blog_app.forms import CommentForm
 from django.contrib.auth.models import User
 from django.test.client import Client
 from django.urls import reverse
@@ -14,8 +13,12 @@ class BlogTestCase(TestCase):
     client = Client()
 
     def setUp(self):
-        self.user = User.objects.create(
-            username='testuser', email='testemail@test.com', password='testpassword')
+        self.client = Client()
+        self.credentials = {
+            'username': 'testuser',
+            'password': 'testpassword'
+        }
+        self.client.user = User.objects.create_user(**self.credentials)
         os.environ['RECAPTCHA_DISABLE'] = 'True'
 
     def test_valid_user_form(self):
@@ -40,26 +43,9 @@ class BlogTestCase(TestCase):
         form = UserRegisterForm(data=data)
         self.assertFalse(form.is_valid())
 
-    def test_valid_comment_form(self):
-        data = {
-            'content': 'commentcontent',
-        }
-
-        form = CommentForm(data=data)
-        self.assertTrue(form.is_valid())
-
-    def tearDown(self):
-        del os.environ['RECAPTCHA_DISABLE']
-
-    def test_invalid_comment_form(self):
-        data = {
-            'content': '',
-        }
-
-        form = CommentForm(data=data)
-        self.assertFalse(form.is_valid())
-
     def test_valid_user_update_form(self):
+        self.client.login(username='testuser', password='testpassword')
+
         data = {
             'username': 'testuser2',
             'email': 'testemail2@test.com'
@@ -69,6 +55,8 @@ class BlogTestCase(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_valid_user_update_form(self):
+        self.client.login(username='testuser', password='testpassword')
+
         data = {
             'username': 'testuser2',
             'email': ''
@@ -78,13 +66,17 @@ class BlogTestCase(TestCase):
         self.assertFalse(form.is_valid())
 
     def test_valid_user_update_form(self):
+        self.client.login(username='testuser', password='testpassword')
+
         new_photo.image = SimpleUploadedFile(name='testimage.png', content=open(
-            blog_app/tests/testdata/testimage.png, 'rb').read())
+            users/tests/testdata/testimage.png, 'rb').read())
 
         form = UserUpdateForm(newPhoto.image)
         self.assertTrue(form.is_valid())
 
     def test_valid_user_update_form(self):
+        self.client.login(username='testuser', password='testpassword')
+
         data = {
             'image': ''
         }

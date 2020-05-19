@@ -33,7 +33,7 @@
 	    <h2 class="article-title">{{ object.title }}</h2>
 	    <p class="article-content">{{ object.content }}</p>
 	{% if user.is_authenticated %}
-	    <a class="btn btn-success btn-sm mt-1 mb-1" type="submit" href="{% url 'like-post' pk=post.pk %}">Like (+{{post_likes}}) </a>
+	    <a class="btn btn-success btn-sm mt-1 mb-1" type="submit" href="{% url 'like-post' pk=post.pk %}">Like (+{{object.post_likes.count}}) </a>
 	     <a class="btn btn-danger btn-sm mt-1 mb-1" type="submit" href="{% url 'unlike-post' pk=post.pk %}">Unlike</a>
 	{% endif %}     
 	  </div>
@@ -45,7 +45,7 @@
 					<strong>{{comment.author}}</strong>
 					<a>{{comment.created_date}}
 					{% if comment.author == user %}
-				<a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'remove-comment' comment.pk %}"> Delete Comment</a>
+<a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'remove-comment' id=post.pk pk=comment.pk  %}"> Delete Comment</a>
 					{% endif %}
 					<br>
 					<a>{{comment.content}}</a>

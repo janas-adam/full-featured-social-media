@@ -11,12 +11,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-from configparser import RawConfigParser
 
-
-config = RawConfigParser()
-config.read('blog_project/secret_settings.ini')
-SECRET_KEY = config.get('section', 'SECRET_KEY')
+SECRET_KEY = os.environ["SECRET_KEY"]
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -47,6 +43,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_cleanup',
     'snowpenguin.django.recaptcha2',
+    'captcha',
 ]
 
 MIDDLEWARE = [
@@ -149,6 +146,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
+
 
 RECAPTCHA_PRIVATE_KEY = os.environ["RECAPTCHA_PRIVATE_KEY"]
 RECAPTCHA_PUBLIC_KEY = os.environ["RECAPTCHA_PUBLIC_KEY"]

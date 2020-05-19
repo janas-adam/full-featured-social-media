@@ -13,6 +13,14 @@ from django.views.generic import (
     DeleteView,
 )
 
+class TestFuncMixin(object):
+
+    def test_func(self):  
+        obj = self.get_object()
+        if self.request.user == obj.author:
+            return True
+        return False
+
 
 class PostListView(ListView):
     model = Post
@@ -26,15 +34,6 @@ class PostDetailView(DetailView):
     model = Post
     template_name = 'blog/post_detail.html'
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        post = self.get_object()
-        post_likes = PostLike.objects.filter(post=post).count()
-        
-       	context['post_likes'] = post_likes
-       
-        return context
-
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -46,32 +45,20 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class PostUpdateView(TestFuncMixin, LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     fields = ['title', 'content']
     template_name = 'blog/post_form.html'
 
-    def form_valid(self, form):  # user logged in is the author of the post#
+    def form_valid(self, form):  # user logged in is the author of the post
         form.instance.author = self.request.user
         return super().form_valid(form)
 
-    def test_func(self):  # it prevents users to update other people posts
-        post = self.get_object()
-        if self.request.user == post.author:
-            return True
-        return False
 
-
-class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class PostDeleteView(TestFuncMixin, LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
     template_name = 'blog/post_confirm_delete.html'
     success_url = '/'
-
-    def test_func(self):
-        post = self.get_object()
-        if self.request.user == post.author:
-            return True
-        return False
 
 
 def about(request):
@@ -97,33 +84,27 @@ class CategoryPostListView(ListView):
 	paginate_by = 3
 
 	def get_queryset(self):
-		self.category = get_object_or_404(Category, id=self.kwargs['category'] )
-		return Post.objects.filter(category=self.category).order_by('-date_posted')
+		category = get_object_or_404(Category, id=self.kwargs['category'] )
+		return Post.objects.filter(category=category).order_by('-date_posted')
 
-
-def add_comment_to_post(request, pk):
-    post = get_object_or_404(Post, pk=pk)
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.author = request.user
-            comment.post = post
-            comment.save()
-            return redirect('post-detail', pk=post.pk)
-    else:
-        form = CommentForm()
-    return render(request, 'blog/comment_form.html', {'form': form})
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    fields = ['content']
+    template_name = 'blog/comment_form.html'
 
     def form_valid(self, form):
         form.instance.author = self.request.user
+        form.instance.post = get_object_or_404(Post, pk=self.kwargs['pk'])
         return super().form_valid(form)
 
 
-def remove_comment(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
-    comment.delete()
-    return redirect('post-detail', pk=comment.post.pk)
+class CommentDeleteView(TestFuncMixin, LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+    template_name = 'blog/comment_confirm_delete.html'
+
+    def get_success_url(self):
+        self.post = get_object_or_404(Post, pk=self.kwargs['id'] )
+        return reverse('post-detail', kwargs={'pk' : self.post.pk})
 
 
 def like_post(request, pk):
@@ -132,7 +113,7 @@ def like_post(request, pk):
         messages.error(request, 'this post is already liked')
     else:
         new_like = PostLike.objects.create(user=request.user, post=post)
-        new_like.save()
+
 
     return redirect('post-detail', pk=post.pk)
 
@@ -144,7 +125,6 @@ def like_comment(request, pk):
     else:
         new_like = CommentLike.objects.create(
             user=request.user, comment=comment)
-        new_like.save()
 
     return redirect('post-detail', pk=comment.post.pk)
 
@@ -165,5 +145,4 @@ def unlike_comment(request, pk):
 		messages.error(request, 'you didn\'t like this comment yet')
 
 	return redirect('post-detail', pk=comment.post.pk)
-
 
